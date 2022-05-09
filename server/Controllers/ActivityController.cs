@@ -39,8 +39,8 @@ namespace server.Controllers
         }
         [Authorize]
         [HttpGet]
-        [Route("statistic")]
-        public IActionResult Statistic([FromBody] String id)
+        [Route("statistic/{id}")]
+        public IActionResult Statistic(String id)
         {
             var animal = animalRepository.GetById(new Guid(id));
             var activities = activityRepository.GetByAnimalId(animal.Id);
@@ -48,8 +48,8 @@ namespace server.Controllers
         }
         [Authorize]
         [HttpGet]
-        [Route("getByAnimalId")]
-        public IActionResult GetByAnimalId([FromBody] String id)
+        [Route("getByAnimalId/{id}")]
+        public IActionResult GetByAnimalId( String id)
         {
             var animal = animalRepository.GetById(new Guid(id));
             var activities = activityRepository.GetByAnimalId(animal.Id);
@@ -70,7 +70,13 @@ namespace server.Controllers
         public IActionResult Get([FromBody] String Id)
         {
             var activities = activityRepository.GetById(new Guid(Id));
-            return Ok(activities);
+            return Ok(new 
+            {
+                SleepHour = activities.SleepHour,
+                ActiveHour = activities.ActiveHour,
+                Animal = animalRepository.GetById(activities.AnimalId),
+                Id = activities.Id
+            });
         }
         [Authorize]
         [HttpPut]
@@ -95,10 +101,10 @@ namespace server.Controllers
 
         [Authorize]
         [HttpDelete]
-        [Route("delete")]
-        public IActionResult Delete([FromBody] String activityId)
+        [Route("delete/{id}")]
+        public IActionResult Delete(String id)
         {
-            var guid = new Guid(activityId);
+            var guid = new Guid(id);
             var note = activityRepository.GetById(guid);
             if (note == null)
                 return BadRequest(new { Error = "Activity isn't exist" });

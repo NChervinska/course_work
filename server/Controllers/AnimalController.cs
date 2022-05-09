@@ -80,7 +80,16 @@ namespace server.Controllers
         public IActionResult Get(String id)
         {
             var animals = animalRepository.GetById(new Guid(id));
-            return Ok(animals);
+            return Ok(new
+            {
+                Age = animals.Age,
+                Name = animals.Name,
+                Client = clientRepository.GetById(animals.ClientId),
+                Employee = employeeRepository.GetById(animals.EmployeeId),
+                Type = animals.Type,
+                Weight = animals.Weight,
+                Id = animals.Id
+            });
         }
         [Authorize]
         [HttpGet]
@@ -88,19 +97,19 @@ namespace server.Controllers
         public IActionResult CareRecommendations(String id)
         {
             var animals = animalRepository.GetById(new Guid(id));
-            if(animals.Type == "Dog")
+            if(animals.Type == "dog")
             {
                 return Ok("https://www.royalcanin.com/ua/dogs/thinking-of-getting-a-dog/how-to-care-for-a-dog");
-            }else if(animals.Type == "Cat")
+            }else if(animals.Type == "cat")
             {
                 return Ok("https://www.royalcanin.com/ua/cats/thinking-of-getting-a-cat/how-to-care-for-a-kitten-or-cat");
-            }else if(animals.Type == "Parrot")
+            }else if(animals.Type == "parrot")
             {
                 return Ok("https://kultura.poltava.ua/yak-pravilno-doglyadati-za-papugami/");
-            }else if(animals.Type == "Humster")
+            }else if(animals.Type == "humster")
             {
                 return Ok("https://vn.20minut.ua/Podii/instruktsiya-yak-doglyadati-za-homyachkom-10244476.html#:~:text=%D0%9D%D0%B5%20%D0%B4%D0%B0%D0%B2%D0%B0%D0%B9%D1%82%D0%B5%20%D1%85%D0%BE%D0%BC'%D1%8F%D0%BA%D0%BE%D0%B2%D1%96%20%D0%BD%D1%96%D1%87%D0%BE%D0%B3%D0%BE,%D0%BF%D0%BE%D1%82%D1%80%D1%96%D0%B1%D0%BD%D0%BE%20%D0%B2%D1%96%D0%BD%20%D0%BD%D0%B5%20%D0%B7'%D1%97%D1%81%D1%82%D1%8C.");
-            }else if(animals.Type == "Turtle")
+            }else if(animals.Type == "turtle")
             {
                 return Ok("http://poradum.com/poradi-dlya-domu/kimnatni-roslyny/yak-doglyadati-za-cherepaxoyu-v-domashnix-umovax-vazhlivi-znannya.html");
             }
@@ -112,23 +121,23 @@ namespace server.Controllers
         public IActionResult FeedingRecommendations(String id)
         {
             var animals = animalRepository.GetById(new Guid(id));
-            if (animals.Type == "Dog")
+            if (animals.Type == "dog")
             {
                 return Ok("https://www.royalcanin.com/ua/dogs/thinking-of-getting-a-dog/how-to-care-for-a-dog");
             }
-            else if (animals.Type == "Cat")
+            else if (animals.Type == "cat")
             {
                 return Ok("https://www.royalcanin.com/ua/cats/thinking-of-getting-a-cat/how-to-care-for-a-kitten-or-cat");
             }
-            else if (animals.Type == "Parrot")
+            else if (animals.Type == "parrot")
             {
                 return Ok("https://uk.observatoriodepaliativos.org/Papageien-f-ttern-172");
             }
-            else if (animals.Type == "Humster")
+            else if (animals.Type == "humster")
             {
                 return Ok("https://zoocomplex.com.ua/ua-chem-kormit-homyaka/");
             }
-            else if (animals.Type == "Turtle")
+            else if (animals.Type == "turtle")
             {
                 return Ok("https://kultura.poltava.ua/yak-chasto-goduvati-krasnouxuyu-cherepaxu/");
             }
@@ -159,10 +168,10 @@ namespace server.Controllers
 
         [Authorize]
         [HttpDelete]
-        [Route("delete")]
-        public IActionResult Delete([FromBody] String animalId)
+        [Route("delete/{id}")]
+        public IActionResult Delete( String id)
         {
-            var guid = new Guid(animalId);
+            var guid = new Guid(id);
             var note = animalRepository.GetById(guid);
             if (note == null)
                 return BadRequest(new { Error = "Animal isn't exist" });

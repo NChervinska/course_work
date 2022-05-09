@@ -47,7 +47,15 @@ namespace server.Controllers
             var client = clientRepository.GetByUserId(new Guid(id));
             return Ok(client);
         }
-        
+        [Authorize(Roles = "client")]
+        [HttpGet]
+        [Route("")]
+        public IActionResult GetByToken()
+        {
+            var resempl = userRepository.GetByEmail(this.HttpContext.GetEmailFromToken());
+            var employee = clientRepository.GetByUserId(resempl.Id);
+            return Ok(employee);
+        }
         [Authorize(Roles = "client")]
         [HttpPut]
         [Route("edit")]
@@ -82,10 +90,10 @@ namespace server.Controllers
         }
         [Authorize(Roles = "admin")]
         [HttpDelete]
-        [Route("delete")]
-        public IActionResult Delete([FromBody] String clientId)
+        [Route("delete/{id}")]
+        public IActionResult Delete(String id)
         {
-            var guid = new Guid(clientId);
+            var guid = new Guid(id);
             var client = clientRepository.GetById(guid);
             if (client == null) return BadRequest(new { Error = "Client isn't exist" });
 

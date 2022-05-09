@@ -47,6 +47,15 @@ namespace server.Controllers
             var employee = employeeRepository.GetByUserId(new Guid(id));
             return Ok(employee);
         }
+        [Authorize(Roles = "employee")]
+        [HttpGet]
+        [Route("")]
+        public IActionResult GetByToken()
+        {
+            var resempl = userRepository.GetByEmail(this.HttpContext.GetEmailFromToken());
+            var employee = employeeRepository.GetByUserId(resempl.Id);
+            return Ok(employee);
+        }
 
         [Authorize(Roles = "employee")]
         [HttpPut]
@@ -71,10 +80,10 @@ namespace server.Controllers
         }
         [Authorize(Roles = "admin")]
         [HttpDelete]
-        [Route("delete")]
-        public IActionResult Delete([FromBody] String employeeId)
+        [Route("delete/{id}")]
+        public IActionResult Delete(String id)
         {
-            var guid = new Guid(employeeId);
+            var guid = new Guid(id);
             var employee = employeeRepository.GetById(guid);
             if (employee == null) return BadRequest(new { Error = "Employee isn't exist" });
 
