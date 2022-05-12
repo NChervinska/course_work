@@ -31,6 +31,10 @@ namespace server.Repositories
             collection.UpdateOne(filter, update);
             return activity;
         }
+        public Activity GetByDate(DateTime date)
+        {
+            return collection.Find(x => x.LastUpdate == date).FirstOrDefault();
+        }
         public Activity GetById(Guid id)
         {
             return collection.Find(x => x.Id == id).FirstOrDefault();

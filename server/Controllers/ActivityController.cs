@@ -28,11 +28,17 @@ namespace server.Controllers
         [Route("add")]
         public IActionResult Add([FromBody] ActivityApiModel model)
         {
+            if(model.SleepHour + model.ActiveHour > 24)
+                return BadRequest(new { Error = "Not valid activity" });
+            var now = DateTime.Now;
+            var date = new DateTime(now.Year, now.Month, now.Day, 0, 0, 0);
+            var activity = activityRepository.GetByDate(date);
+            if(activity != null) return BadRequest(new { Error = "you have already added the activity" });
             var dbNote = activityRepository.Insert(new Activity()
             {
                 ActiveHour = model.ActiveHour,
                 SleepHour = model.SleepHour,
-                LastUpdate = DateTime.Now,
+                LastUpdate = date,
                 AnimalId = model.AnimalId,
             });
             return Ok(dbNote);
